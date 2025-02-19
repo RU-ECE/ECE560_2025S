@@ -10,8 +10,7 @@ Welcome to the **ECE560_2025S** repository for **Computer Graphics**! This cours
 - 🎮 **Game Engine Integration**: OpenGL-based rendering.
 - 🧠 **AI in Graphics**: Procedural generation, generative AI.
 
-## 📷 Cool Computer Graphics Image
-![Computer Graphics](./graphics.png)
+
 
 ## 🚀 Getting Started
 To clone this repository, run:
