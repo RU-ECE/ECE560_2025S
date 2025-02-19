@@ -1,4 +1,5 @@
 # this is the list of contributors
 # Your job is to put your name first in the list
 # BUT DO NOT DELETE ANYONE ELSE's NAME!
+Joel Kinny
 Dov Kruger
