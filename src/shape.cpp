@@ -140,7 +140,7 @@ shape shape::gen_circle(uint32_t circle_res) {
 }
 
 shape shape::gen_octahedron() { // 8 sides, each a triangle
-  float vertices[] = {
+  const float vertices[] = {
     0.f, 1.f, 0.f, // 0
     1.f, 0.f, 0.f, // 1
     -1.f, 0.f, 0.f, // 2
@@ -148,7 +148,7 @@ shape shape::gen_octahedron() { // 8 sides, each a triangle
     0.f, 0.f, -1.f, // 4
     0.f, -1.f, 0.f // 5
   };
-  uint32_t indices[] = {
+  const uint32_t indices[] = {
     3, 1, 
     0, 4, 
     0, 2, 
@@ -156,7 +156,7 @@ shape shape::gen_octahedron() { // 8 sides, each a triangle
     1, 5, 
     4, 2
   };
-  return shape(vertices, 18, indices, 12);
+  return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
 }
 
 shape shape::gen_tetrahedron() { // 4 sides, each a triangle
