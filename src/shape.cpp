@@ -115,8 +115,83 @@ shape shape::gen_cube() {
     create a cylinder with the number of facets around the circumference
 */
 shape shape::gen_cylinder(uint32_t res) {
-    return shape();
+    const float radius = 1.0f; // Unit cylinder
+    const float height = 1.0f;
+    const uint32_t numVertices = (res + 1) * 2 + 2; // Top and bottom circles + center points
+    const uint32_t numIndices = res * 6 + res * 6;  // Side faces + top/bottom faces
+
+    float* vert = new float[numVertices * 5];
+    uint32_t* indices = new uint32_t[numIndices];
+
+    uint32_t c = 0;
+    float angleStep = 2.0f * PI / res;
+
+    // Generate top circle
+    vert[c++] = 0.0f;  // Center vertex (x)
+    vert[c++] = height / 2.0f; // Center vertex (y)
+    vert[c++] = 0.0f;  // Center vertex (z)
+    vert[c++] = 0.5f;  
+    vert[c++] = 0.5f;  
+
+    for (uint32_t i = 0; i <= res; i++) {
+        float angle = i * angleStep;
+        vert[c++] = radius * cos(angle);
+        vert[c++] = height / 2.0f;
+        vert[c++] = radius * sin(angle);
+        vert[c++] = (cos(angle) + 1.0f) / 2.0f; // UV u
+        vert[c++] = (sin(angle) + 1.0f) / 2.0f; // UV v
+    }
+
+    // Generate bottom circle
+    vert[c++] = 0.0f;
+    vert[c++] = -height / 2.0f;
+    vert[c++] = 0.0f;
+    vert[c++] = 0.5f;
+    vert[c++] = 0.5f;
+
+    for (uint32_t i = 0; i <= res; i++) {
+        float angle = i * angleStep;
+        vert[c++] = radius * cos(angle);
+        vert[c++] = -height / 2.0f;
+        vert[c++] = radius * sin(angle);
+        vert[c++] = (cos(angle) + 1.0f) / 2.0f;
+        vert[c++] = (sin(angle) + 1.0f) / 2.0f;
+    }
+
+    // Generate indices for top face
+    c = 0;
+    for (uint32_t i = 1; i <= res; i++) {
+        indices[c++] = 0;
+        indices[c++] = i;
+        indices[c++] = i + 1;
+    }
+
+    // Generate indices for bottom face
+    uint32_t bottomCenterIndex = res + 2;
+    uint32_t bottomStartIndex = bottomCenterIndex + 1;
+    for (uint32_t i = 0; i < res; i++) {
+        indices[c++] = bottomCenterIndex;
+        indices[c++] = bottomStartIndex + i + 1;
+        indices[c++] = bottomStartIndex + i;
+    }
+
+    // Generate indices for side faces (triangle strip)
+    for (uint32_t i = 1; i <= res; i++) {
+        indices[c++] = i;
+        indices[c++] = i + 1;
+        indices[c++] = bottomStartIndex + i;
+
+        indices[c++] = bottomStartIndex + i;
+        indices[c++] = i + 1;
+        indices[c++] = bottomStartIndex + i + 1;
+    }
+
+    shape s(vert, numVertices * 5, indices, numIndices);
+    delete[] vert;
+    delete[] indices;
+    return s;
 }
+
 
 shape shape::gen_cone(uint32_t res) {
     return shape();
