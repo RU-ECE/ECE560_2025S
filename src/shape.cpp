@@ -1,6 +1,7 @@
 #include "shape.hh"
 #include "log.hh"
 #include <GL/glew.h>
+#include <memory>
 
 // utility function to dump vertex data to the screen
 #if 0
@@ -128,7 +129,54 @@ shape shape::gen_cone(uint32_t res) {
     tube_res sections
 */
 shape shape::gen_torus(float radius, uint32_t ring_res, uint32_t tube_res) {
-    return shape();
+    // the angle around the torus
+    const auto theta_res = 2*PI / ring_res; 
+    // the angle around the tube
+    const auto phi_res = 2*PI / tube_res;
+    std::unique_ptr<float[]> vert(new float[ring_res * tube_res*5]);
+    // vertices
+    for (auto i = 0; i < ring_res; i++) {
+        for (auto j = 0; j < tube_res; j++) {
+            auto theta = i * theta_res;
+            auto phi = j * phi_res;
+            vert[i * tube_res*5 + j*5] = (radius + cos(phi)) * cos(theta);
+            vert[i * tube_res*5 + j*5 + 1] = (radius + cos(phi)) * sin(theta);
+            vert[i * tube_res*5 + j*5 + 2] = sin(phi);
+            vert[i * tube_res*5 + j*5 + 3] = theta / (2*PI);
+            vert[i * tube_res*5 + j*5 + 4] = phi / (2*PI);
+        }
+    }
+    // indices
+    uint32_t c = 0;
+    std::unique_ptr<uint32_t[]> indices(new uint32_t[ring_res * tube_res * 6]);
+    for (auto i = 0; i < ring_res; i++) {
+        for (auto j = 0; j < tube_res; j++) {
+            uint32_t next_i = (i + 1) % ring_res;
+            uint32_t next_j = (j + 1) % tube_res;
+
+            /*
+            * i,j ---- (next_i, j)
+            * |
+            * |
+            * | 
+            * (i, next_j) ---- (next_i, next_j) 
+            */
+            
+            
+            // triangle 1
+            indices[c++] = i * tube_res + j;
+            indices[c++] = next_i * tube_res + j;
+            indices[c++] = i * tube_res + next_j;
+
+            // triangle 2
+            indices[c++] = next_i * tube_res + j;
+            indices[c++] = next_i * tube_res + next_j;
+            indices[c++] = i * tube_res + next_j;
+        }
+    }
+
+    shape s(vert.get(), ring_res * tube_res*5, nullptr, 0);
+    return s;
 }
 
 shape shape::gen_grid(uint32_t nx, uint32_t ny) {
