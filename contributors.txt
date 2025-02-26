@@ -1,6 +1,7 @@
 # this is the list of contributors
 # Your job is to put your name first in the list
 # BUT DO NOT DELETE ANYONE ELSE's NAME!
+Daniel Gameiro
 Amanda Lau
 Josh Khanin
 Shutong Peng
