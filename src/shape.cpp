@@ -118,8 +118,10 @@ shape shape::gen_cube() {
 shape shape::gen_cylinder(uint32_t res) {
     const float radius = 1.0f; // Unit cylinder
     const float height = 1.0f;
-    const uint32_t numVertices = (res + 1) * 2 + 2; // Top and bottom circles + center points
-    const uint32_t numIndices = res * 6 + res * 6;  // Side faces + top/bottom faces
+    // Each circle: 1 center + (res+1) circumference (last duplicates the first)
+    const uint32_t numVertices = (res + 1) * 2 + 2; // top + bottom circle vertices
+    // Top face: res triangles, Bottom face: res triangles, Side faces: res * 2 triangles (6 indices per segment)
+    const uint32_t numIndices = res * 3 + res * 3 + res * 6;  
 
     float* vert = new float[numVertices * 5];
     uint32_t* indices = new uint32_t[numIndices];
@@ -127,13 +129,15 @@ shape shape::gen_cylinder(uint32_t res) {
     uint32_t c = 0;
     float angleStep = 2.0f * PI / res;
 
-    // Generate top circle
-    vert[c++] = 0.0f;  // Center vertex (x)
-    vert[c++] = height / 2.0f; // Center vertex (y)
-    vert[c++] = 0.0f;  // Center vertex (z)
-    vert[c++] = 0.5f;  
-    vert[c++] = 0.5f;  
+    // Top circle
+    // Top center vertex (index 0)
+    vert[c++] = 0.0f;                // x
+    vert[c++] = height / 2.0f;         // y
+    vert[c++] = 0.0f;                // z
+    vert[c++] = 0.5f;                // u
+    vert[c++] = 0.5f;                // v
 
+    // Top circumference vertices (indices 1 to res+1, with a duplicate for wrapping)
     for (uint32_t i = 0; i <= res; i++) {
         float angle = i * angleStep;
         vert[c++] = radius * cos(angle);
@@ -143,13 +147,15 @@ shape shape::gen_cylinder(uint32_t res) {
         vert[c++] = (sin(angle) + 1.0f) / 2.0f; // UV v
     }
 
-    // Generate bottom circle
+    // Bottom circle
+    // Bottom center vertex (index = res+2)
     vert[c++] = 0.0f;
     vert[c++] = -height / 2.0f;
     vert[c++] = 0.0f;
     vert[c++] = 0.5f;
     vert[c++] = 0.5f;
 
+    // Bottom circumference vertices (indices res+3 to 2*res+3, with a duplicate for wrapping)
     for (uint32_t i = 0; i <= res; i++) {
         float angle = i * angleStep;
         vert[c++] = radius * cos(angle);
@@ -159,32 +165,43 @@ shape shape::gen_cylinder(uint32_t res) {
         vert[c++] = (sin(angle) + 1.0f) / 2.0f;
     }
 
-    // Generate indices for top face
+    // Now build indices.
     c = 0;
-    for (uint32_t i = 1; i <= res; i++) {
+    // Top face: triangle fan using top center (index 0) and top circumference vertices (indices 1 to res+1)
+    for (uint32_t i = 0; i < res; i++) {
         indices[c++] = 0;
-        indices[c++] = i;
-        indices[c++] = i + 1;
+        indices[c++] = 1 + i;
+        indices[c++] = 1 + i + 1;
     }
 
-    // Generate indices for bottom face
+    // Bottom face: triangle fan using bottom center (index = res+2) and bottom circumference vertices
     uint32_t bottomCenterIndex = res + 2;
-    uint32_t bottomStartIndex = bottomCenterIndex + 1;
+    uint32_t bottomStartIndex = res + 3;
     for (uint32_t i = 0; i < res; i++) {
         indices[c++] = bottomCenterIndex;
+        // Note: winding order is reversed so the face normal points downward.
         indices[c++] = bottomStartIndex + i + 1;
         indices[c++] = bottomStartIndex + i;
     }
 
-    // Generate indices for side faces (triangle strip)
-    for (uint32_t i = 1; i <= res; i++) {
-        indices[c++] = i;
-        indices[c++] = i + 1;
-        indices[c++] = bottomStartIndex + i;
+    // Side faces: each segment forms a quad (2 triangles)
+    for (uint32_t i = 0; i < res; i++) {
+        // Top vertices are at indices 1+i and 1+i+1
+        // Bottom vertices are at indices bottomStartIndex+i and bottomStartIndex+i+1
+        uint32_t top1 = 1 + i;
+        uint32_t top2 = 1 + i + 1;
+        uint32_t bot1 = bottomStartIndex + i;
+        uint32_t bot2 = bottomStartIndex + i + 1;
 
-        indices[c++] = bottomStartIndex + i;
-        indices[c++] = i + 1;
-        indices[c++] = bottomStartIndex + i + 1;
+        // First triangle of quad
+        indices[c++] = top1;
+        indices[c++] = top2;
+        indices[c++] = bot1;
+
+        // Second triangle of quad
+        indices[c++] = bot1;
+        indices[c++] = top2;
+        indices[c++] = bot2;
     }
 
     shape s(vert, numVertices * 5, indices, numIndices);
