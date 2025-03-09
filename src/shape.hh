@@ -23,7 +23,7 @@ public:
     static shape gen_dodecahedron(); // 12 sides, each pentagon
     static shape gen_icosahedron(); // 20 sides, each a triangle
     static shape gen_cylinder(uint32_t ring_res);
-    static shape gen_cone(uint32_t ring_res);
+    static shape gen_cone(uint32_t h, uint32_t ring_res);
     static shape gen_torus(float tube_radius, uint32_t ring_res, uint32_t tube_resolution);
     static shape gen_grid(uint32_t gridX, uint32_t gridY);
     static shape gen_circle(uint32_t circle_res); // filled circle

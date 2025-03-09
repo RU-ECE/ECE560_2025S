@@ -211,8 +211,48 @@ shape shape::gen_cylinder(uint32_t res) {
 }
 
 
-shape shape::gen_cone(uint32_t res) {
-    return shape();
+shape shape::gen_cone(uint32_t h, uint32_t res) {
+
+    const uint32_t numVertices = res + 2; // bottom circle, center point, top point
+    const uint32_t numIndices = res * 3 * 3;  // triangle strip  
+
+    /* Allocate memory */
+    float vertices[numVertices * 3]; // leave out texture for now
+    uint32_t indices[numIndices];
+
+    /* Start with center of bottom */
+    uint32_t cur_idx = 0;
+    vertices[cur_idx++] = 0.0f;
+    vertices[cur_idx++] = 0.0f;
+    vertices[cur_idx++] = 0.0f;
+
+    /* Generate bottom circle points */
+    for (uint32_t i = 0; i < res; i++) {
+        vertices[cur_idx++] = 0.5 * cos(2.0f * PI * i / res);
+        vertices[cur_idx++] = 0.0f;
+        vertices[cur_idx++] = 0.5 * sin(2.0f * PI * i / res);
+    }
+
+    /* Generate top point */
+    vertices[cur_idx++] = 0.0f;
+    vertices[cur_idx++] = h;
+    vertices[cur_idx++] = 0.0f;
+
+    /* Connect bottom circle */
+    for (uint32_t i = 0; i < res; i++) {
+        indices[cur_idx++] = 0;
+        indices[cur_idx++] = i + 1;
+        indices[cur_idx++] = i;
+    }
+
+    /* Connect circle to top point */
+    for (uint32_t i = 0; i < res; i++) {
+        indices[cur_idx++] = i + 1;
+        indices[cur_idx++] = res + 1;
+        indices[cur_idx++] = i;
+    }
+    
+    return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
 }
 
 /*
