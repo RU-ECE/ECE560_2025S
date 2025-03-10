@@ -339,8 +339,23 @@ shape shape::gen_octahedron() { // 8 sides, each a triangle
   return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
 }
 
+//Authors: Beomseok Park, Shutong Peng
 shape shape::gen_tetrahedron() { // 4 sides, each a triangle
-    return shape();
+    const float vertices[] = {
+        // Vertex positions (x, y, z)
+        1.0f,  1.0f,  1.0f,  // Vertex 0
+       -1.0f, -1.0f,  1.0f,  // Vertex 1
+       -1.0f,  1.0f, -1.0f,  // Vertex 2
+        1.0f, -1.0f, -1.0f   // Vertex 3
+    };
+
+    const uint32_t indices[] = {
+        0, 1, 2, //face 1
+        0, 3, 1, //face 2
+        0, 2, 3, //face 3
+        1, 3, 2 //face 4
+    };
+    return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
 }
 
 shape shape::gen_dodecahedron() { // 12 sides, each pentagon
