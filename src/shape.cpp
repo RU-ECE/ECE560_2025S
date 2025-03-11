@@ -365,3 +365,40 @@ shape shape::gen_dodecahedron() { // 12 sides, each pentagon
 shape shape::gen_icosahedron() { // 20 sides, each a triangle
     return shape();
 }
+
+shape shape::gen_rhombicuboctahedron() { // 26 faces (8 triangles and 18 squares), 24 vertices
+    const float x = 3*sqrtf(2)/10;
+
+    const float vertices[] = {
+        x, 1.f, x,  -x, 1.f, x,  -x, 1.f,-x,   x, 1.f,-x,  // Top 4
+        x,-1.f, x,  -x,-1.f, x,  -x,-1.f,-x,   x,-1.f,-x,  // Bottom 4
+       -1.f, x, x,  -1.f,-x, x,  -1.f,-x,-x,  -1.f, x,-x,  // Left 4
+        1.f, x, x,   1.f,-x, x,   1.f,-x,-x,   1.f, x,-x,  // Right 4
+        x, x, 1.f,   x,-x, 1.f,  -x,-x, 1.f,  -x, x, 1.f,  // Front 4
+        x, x,-1.f,   x,-x,-1.f,  -x,-x,-1.f,  -x, x,-1.f   // Back 4
+    };
+
+    const uint32_t indices[] = {
+        // Squares
+        0, 2, 1,  0, 3, 2,  // Top
+        5, 7, 4,  5, 6, 7,  // Bottom
+        8, 10, 9,  8, 11, 10,  // Left
+        13, 15, 12,  13, 14, 15,  // Right
+        16, 18, 17,  16, 19, 18,  // Front
+        21, 23, 20,  21, 22, 23,  // Back
+
+        // Diagonal squares
+        16, 1, 19,  16, 0, 1,   19, 9, 18,   19, 8, 9,  
+        18, 4, 17,  18, 5, 4,   17, 12, 16,  17, 13, 12,  
+        1, 11, 8,   1, 2, 11,   9, 6, 5,     9, 10, 6,  
+        4, 14, 13,  4, 7, 14,   12, 3, 0,    12, 15, 3,  
+        3, 23, 2,   3, 20, 23,  11, 22, 10,  11, 23, 22,  
+        6, 21, 7,   6, 22, 21,  14, 20, 15,  14, 21, 20,  
+
+        // Triangles
+        1, 8, 19,   9, 5, 18,   4, 13, 17,  12, 0, 16,  
+        2, 23, 11,  10, 22, 6,  7, 21, 14,  15, 20, 3
+    };
+
+    return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
+}
