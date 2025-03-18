@@ -315,9 +315,44 @@ shape shape::gen_grid(uint32_t nx, uint32_t ny) {
     return shape();
 }
 
+struct xyzrgb{
+    float x, y, z, r, g, b;
+};
+
 shape shape::gen_circle(uint32_t circle_res) {
-    return shape();
+    const float radius = 1.0f;
+    const uint32_t numVertices = circle_res + 1; // Center + circumference points
+    const uint32_t numIndices = circle_res * 3;  // Each triangle has 3 indices
+
+    xyzrgb* vert = new xyzrgb[numVertices]; // Position (x, y, z) + Color (r, g, b)
+    uint32_t* indices = new uint32_t[numIndices];
+
+    uint32_t c = 0;
+    float angleStep = 2.0f * PI / circle_res;
+
+    // Center vertex
+    vert[c++] = {0,0,0,1,0,0};
+
+    // Circumference vertices
+    for (uint32_t i = 0; i < circle_res; i++) {
+        float angle = i * angleStep;
+        vert[c++] = {cos(angle), sin(angle), 0, 0, 0, 1};
+    }
+
+    // Generating triangle fan indices
+    c = 0;
+    for (uint32_t i = 0; i < circle_res; i++) {
+        indices[c++] = 0;             // Center vertex
+        indices[c++] = i + 1;         // Current vertex
+        indices[c++] = (i + 1) % circle_res + 1; // Next vertex (wrapping around)
+    }
+
+    shape s((float*) vert, numVertices * 6, indices, numIndices);
+    delete[] vert;
+    delete[] indices;
+    return s;
 }
+
 
 shape shape::gen_octahedron() { // 8 sides, each a triangle
   const float vertices[] = {
