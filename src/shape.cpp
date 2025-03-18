@@ -437,3 +437,52 @@ shape shape::gen_rhombicuboctahedron() { // 26 faces (8 triangles and 18 squares
 
     return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
 }
+
+//Authors: Mayank Barad, Nabhan Zaman
+shape shape::gen_moebius(float w, int ring_res) {
+    // Allocate memory for vertices and indices
+    float* vertices = new float[2*ring_res * 3];
+    uint32_t* indices = new uint32_t[2*ring_res * 3];
+
+    float r = 1.0f;
+
+    for (uint32_t dir = 0; dir < ring_res; dir++) { // Loop through each direction
+        float theta1 = (dir*2*PI)/ring_res;
+        float theta2 = ((dir+ring_res)*2*PI)/ring_res;
+
+        float x1 = (r + w*cos(theta1/2) ) * cos(theta1);
+        float y1 = (r + w*sin(theta1/2) ) * sin(theta1);
+        float z1 = w*sin(theta1/2);
+
+        float x2 = (r + w*cos(theta2/2) ) * cos(theta2);
+        float y2 = (r + w*sin(theta2/2) ) * sin(theta2);
+        float z2 = w*sin(theta2/2);
+
+        uint32_t idx = dir * 6;
+        vertices[idx] = x1;
+        vertices[idx+1] = y1;
+        vertices[idx+2] = z1;
+
+        vertices[idx+3] = x2;
+        vertices[idx+4] = y2;
+        vertices[idx+5] = z2;
+    }
+
+    for (uint32_t tri = 0; tri < ring_res-1; tri++) { // Triangle indices for surface
+        uint32_t idx = tri * 6;
+
+        indices[idx] =   2*tri;
+        indices[idx+1] = 2*tri + 1;
+        indices[idx+2] = 2*tri + 2;
+
+        indices[idx+3] = 2*tri + 2;
+        indices[idx+4] = 2*tri + 1;
+        indices[idx+5] = 2*tri + 3;
+    }
+    
+    // Create and return the shape object with vertices and indices
+    shape s(vertices, 2*3*ring_res, indices, 2*3*ring_res);
+    delete[] vertices;
+    delete[] indices;
+    return s;
+}
