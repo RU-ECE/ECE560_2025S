@@ -27,6 +27,7 @@ public:
     static shape gen_torus(float tube_radius, uint32_t ring_res, uint32_t tube_resolution);
     static shape gen_grid(uint32_t gridX, uint32_t gridY);
     static shape gen_circle(uint32_t circle_res); // filled circle
+    static shape gen_rhombicuboctahedron();
 
     shape() : vao(0), vbo(0), ibo(0) {}
     shape(const float vert[], const uint32_t vert_size,
