@@ -319,13 +319,17 @@ struct xyzrgb{
     float x, y, z, r, g, b;
 };
 
+//Authors: Shun Li, Yuning Zhuang
 shape shape::gen_circle(uint32_t circle_res) {
-    const float radius = 1.0f;
+    const float radius = 1.0f; //Unit circle with radius = 1.0
     const uint32_t numVertices = circle_res + 1; // Center + circumference points
     const uint32_t numIndices = circle_res * 3;  // Each triangle has 3 indices
 
     xyzrgb* vert = new xyzrgb[numVertices]; // Position (x, y, z) + Color (r, g, b)
     uint32_t* indices = new uint32_t[numIndices];
+    /*
+    std::vector<xyzrgb> vert(numVertices); // Use vector to manage memory
+    std::vector<uint32_t> indices(numIndices);*/
 
     uint32_t c = 0;
     float angleStep = 2.0f * PI / circle_res;
