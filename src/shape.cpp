@@ -486,3 +486,34 @@ shape shape::gen_moebius(float w, int ring_res) {
     delete[] indices;
     return s;
 }
+
+// Authors: Joshua Khanin, Atharva Pandhare
+shape shape::gen_pyramid(float h)
+{
+    /*
+    Base vertex 1: (x - s/2, y - (√3·s)/6, z - h/2)
+
+    Base vertex 2: (x + s/2, y - (√3·s)/6, z - h/2)
+
+    Base vertex 3: (x, y + (√3·s)/3, z - h/2)
+
+    Apex vertex: (x, y, z + h/2)
+    */
+
+    const float s = 1.0f; // side length of the base
+    const float x = 0.0f, y = 0.0f, z = 0.0f; // center of the base
+    const float vertices[] = {
+        x - s / 2, y - (sqrtf(3) * s) / 6, z - h / 2, // Base vertex 1
+        x + s / 2, y - (sqrtf(3) * s) / 6, z - h / 2, // Base vertex 2
+        x, y + (sqrtf(3) * s) / 3, z - h / 2,         // Base vertex 3
+        x, y, z + h / 2                               // Apex vertex
+    };
+    const uint32_t indices[] = {
+        0, 1, 2, // Base
+        0, 1, 3, // Side 1
+        1, 2, 3, // Side 2
+        2, 0, 3  // Side 3
+    };
+
+    return shape(vertices, sizeof(vertices) / sizeof(float), indices, sizeof(indices) / sizeof(uint32_t));
+}
