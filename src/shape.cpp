@@ -312,7 +312,36 @@ shape shape::gen_torus(float radius, uint32_t ring_res, uint32_t tube_res) {
 }
 
 shape shape::gen_grid(uint32_t nx, uint32_t ny) {
-    return shape();
+    uint32_t numVertices = 2*(nx+ny);
+    float* vertices = new float[numVertices*3];
+    uint32_t* indices = new uint32_t[numVertices];
+    float xinc = 2.0f/nx;
+    float yinc = 2.0f/ny;
+
+    uint32_t c = 0;
+    for(uint32_t i = 0; i<nx; i++){
+        float x = -1.0f + i * xinc;
+        vertices[c++] = x;
+        vertices[c++] = -1.0f;
+        vertices[c++] = 0.0f;
+        vertices[c++] = x;
+        vertices[c++] = 1.0f;
+        vertices[c++] = 0.0f;
+    }
+    for(uint32_t i = 0; i<ny; i++){
+        float y = -1.0f + i * yinc;
+        vertices[c++] = -1.0f;
+        vertices[c++] = y;
+        vertices[c++] = 0.0f;
+        vertices[c++] = 1.0f;
+        vertices[c++] = y;
+        vertices[c++] = 0.0f;
+    }
+    for (uint32_t i = 0; i < numVertices; i++) {
+        indices[i] = i;
+    }
+    
+    return shape(vertices,numVertices*3,indices,numVertices);
 }
 
 struct xyzrgb{
