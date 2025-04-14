@@ -431,7 +431,49 @@ shape shape::gen_dodecahedron() { // 12 sides, each pentagon
 }
 
 shape shape::gen_icosahedron() { // 20 sides, each a triangle
-    return shape();
+    const float t = (1.0f + std::sqrt(5.0f)) / 2.0f; // golden ratio
+
+    const float vertices[] = {
+        // 12 vertices of an icosahedron
+        -1,  t,  0,
+         1,  t,  0,
+        -1, -t,  0,
+         1, -t,  0,
+         0, -1,  t,
+         0,  1,  t,
+         0, -1, -t,
+         0,  1, -t,
+         t,  0, -1,
+         t,  0,  1,
+        -t,  0, -1,
+        -t,  0,  1
+    };
+
+    const uint32_t indices[] = {
+        // 20 triangular faces
+        0, 11, 5,
+        0, 5, 1,
+        0, 1, 7,
+        0, 7, 10,
+        0, 10, 11,
+        1, 5, 9,
+        5, 11, 4,
+        11, 10, 2,
+        10, 7, 6,
+        7, 1, 8,
+        3, 9, 4,
+        3, 4, 2,
+        3, 2, 6,
+        3, 6, 8,
+        3, 8, 9,
+        4, 9, 5,
+        2, 4, 11,
+        6, 2, 10,
+        8, 6, 7,
+        9, 8, 1
+    };
+
+    return shape(vertices, sizeof(vertices)/sizeof(float), indices, sizeof(indices)/sizeof(uint32_t));
 }
 
 shape shape::gen_rhombicuboctahedron() { // 26 faces (8 triangles and 18 squares), 24 vertices
